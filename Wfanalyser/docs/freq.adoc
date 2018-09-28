@@ -1,0 +1,5 @@
+A word is a suspected name if:
+
+it occurs with a capital letter immediately after another word without intervening punctuation.
+it occurs with a capital letter immediately after word with an intervening comma
+

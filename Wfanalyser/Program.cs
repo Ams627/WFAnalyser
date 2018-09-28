@@ -31,12 +31,15 @@ namespace Wfanalyser
                 }
 
                 var frequencies = new SortedDictionary<string, int>();
+                var properNouns = new SortedSet<string>();
 
                 foreach (var filename in args)
                 {
                     foreach (var line in File.ReadLines(filename))
                     {
                         var words = line.Split();
+
+                        bool havePunctSeparator = false;
                         foreach (var word in words)
                         {
                             var newWord = "";
@@ -44,13 +47,26 @@ namespace Wfanalyser
                             {
                                 if (char.IsLetter(ch))
                                 {
-                                    newWord += Char.ToLower(ch);
+                                    newWord += ch;
                                 }
                             }
+
                             if (newWord.Any())
                             {
                                 IncrementDictEntry(frequencies, newWord);
                             }
+
+                            if (Char.IsUpper(newWord.First()) && !havePunctSeparator)
+                            {
+                                properNouns.Add(newWord);
+                            }
+
+                            var last = word.Last();
+                            if (char.IsPunctuation(last) && last != ',')
+                            {
+                                havePunctSeparator = true;
+                            }
+
                         }
                     }
                 }
