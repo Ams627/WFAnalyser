@@ -1,0 +1,4 @@
+Masculine animate: muž, pán, předseda, soudce
+Masculine inanimate: hrad, stroj
+Feminine: žena, rúže, píseň, kost
+Neuter: město, moře, kuře, stavení
