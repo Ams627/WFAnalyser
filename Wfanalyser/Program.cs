@@ -8,8 +8,7 @@ using System.Collections.Concurrent;
 
 namespace Wfanalyser
 {
-
-
+    
     internal class Program
     {
         public static void IncrementDictEntry<T>(SortedDictionary<T, int> d, T key)
@@ -35,11 +34,11 @@ namespace Wfanalyser
 
                 foreach (var filename in args)
                 {
+                    bool havePunctSeparator = false;
                     foreach (var line in File.ReadLines(filename))
                     {
                         var words = line.Split();
 
-                        bool havePunctSeparator = false;
                         foreach (var word in words)
                         {
                             var newWord = "";
@@ -54,25 +53,46 @@ namespace Wfanalyser
                             if (newWord.Any())
                             {
                                 IncrementDictEntry(frequencies, newWord);
+                                if (Char.IsUpper(newWord.First()) && !havePunctSeparator && !newWord.All(Char.IsUpper))
+                                {
+                                    properNouns.Add(newWord);
+                                }
                             }
 
-                            if (Char.IsUpper(newWord.First()) && !havePunctSeparator)
+
+                            if (word.Any())
                             {
-                                properNouns.Add(newWord);
+                                var last = word.Last();
+                                if (char.IsPunctuation(last) && last != ',')
+                                {
+                                    havePunctSeparator = true;
+                                }
+                                else
+                                {
+                                    havePunctSeparator = false;
+                                }
                             }
-
-                            var last = word.Last();
-                            if (char.IsPunctuation(last) && last != ',')
-                            {
-                                havePunctSeparator = true;
-                            }
-
+                        }
+                        if (words.Length == 1)
+                        {
+                            havePunctSeparator = true;
                         }
                     }
                 }
 
                 using (var str = new StreamWriter("results.txt"))
                 {
+                    str.WriteLine($"The following words are probably proper nouns:");
+                    int wc = 1;
+                    foreach (var properNoun in properNouns)
+                    {
+                        str.Write($"{properNoun} ");
+                        if (wc % 8 == 0)
+                        {
+                            str.WriteLine();
+                        }
+                        wc++;
+                    }
                     str.WriteLine($"{frequencies.Count} different words:");
                     foreach (var entry in frequencies.OrderByDescending(x => x.Value))
                     {
